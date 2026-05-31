@@ -1,8 +1,16 @@
-# Achaich-AI-ru — AgriTech: Culty, Asistente Agrícola por WhatsApp
+# Achaich-AI-ru — AgriTech: Culty, Asistente Agrícola por Telegram
 
-**Culty** es un asistente agrícola inteligente que opera por **WhatsApp**, diseñado para ayudar a agricultores del **Departamento de Santa Cruz, Bolivia**. Los agricultores pueden enviar mensajes de texto o notas de voz y recibir recomendaciones personalizadas basadas en su perfil y las condiciones climáticas actuales de su región.
+**Culty** es un asistente agrícola inteligente que opera por **Telegram**, diseñado para ayudar a agricultores del **Departamento de Santa Cruz, Bolivia**. Los agricultores pueden enviar mensajes de texto o notas de voz y recibir recomendaciones personalizadas basadas en su perfil y las condiciones climáticas actuales de su región.
 
-El proyecto combina un **bot de WhatsApp conversacional** con un **backend de predicción climática** que anticipa anomalías severas (sequías e inundaciones) con hasta 12 meses de anticipación.
+El proyecto combina un **bot de Telegram conversacional** con un **backend de predicción climática** que anticipa anomalías severas (sequías e inundaciones) con hasta 12 meses de anticipación.
+
+---
+
+## Video de Presentación
+
+[![Ver en YouTube](https://img.shields.io/badge/YouTube-Ver%20Demo-red?logo=youtube)](https://www.youtube.com/watch?v=LINK_DEL_VIDEO)
+
+> Reemplazá `LINK_DEL_VIDEO` con el ID o URL de tu video de YouTube.
 
 ---
 
@@ -19,16 +27,16 @@ El proyecto combina un **bot de WhatsApp conversacional** con un **backend de pr
 ## Arquitectura General
 
 ```
-Agricultor (WhatsApp)
+Agricultor (Telegram)
         │
         ▼
-Meta WhatsApp Cloud API
+Telegram Bot API
         │  webhook POST
         ▼
 ┌─────────────────────────────────────────┐
 │           Django Backend                │
 │                                         │
-│  /culty/whatsapp/webhook/               │
+│  /telegram/webhook/                     │
 │       │                                 │
 │       ├── Texto  ──────────────────┐    │
 │       └── Audio ──► Groq Whisper   │    │
@@ -45,7 +53,7 @@ Meta WhatsApp Cloud API
 └─────────────────────────────────────────┘
         │
         ▼
-Meta WhatsApp Cloud API
+Telegram Bot API
         │
         ▼
 Agricultor recibe texto + audio
@@ -55,9 +63,9 @@ Agricultor recibe texto + audio
 
 ## Componentes Principales
 
-### 1. Asistente Culty (`asistente_culty/`)
+### 1. Bot Culty (`telegram_bot/`)
 
-Bot conversacional de WhatsApp para agricultores.
+Bot conversacional de Telegram para agricultores.
 
 **Flujo de onboarding:** Al escribir por primera vez, Culty hace 6 preguntas para armar el perfil del agricultor:
 1. Nombre
@@ -95,7 +103,7 @@ Predice anomalías de tipo `SEQUIA`, `INUNDACION` o `NORMAL` con nivel de severi
 | Framework web | Django 5.0 + Django-Ninja |
 | Base de datos | PostgreSQL |
 | Procesamiento async | Celery + Redis |
-| WhatsApp API | Meta WhatsApp Cloud API v19 |
+| Telegram API | Telegram Bot API |
 | STT (voz a texto) | Groq Whisper |
 | LLM | Groq Llama 3.3-70b-versatile |
 | TTS (texto a voz) | gTTS (dev) / Google Cloud TTS (prod) |
@@ -114,15 +122,15 @@ Predice anomalías de tipo `SEQUIA`, `INUNDACION` o `NORMAL` con nivel de severi
 ```
 hackaton/
 │
-├── asistente_culty/                # Bot de WhatsApp (Culty)
+├── telegram_bot/                   # Bot de Telegram (Culty)
 │   ├── models.py                   # PerfilAgricultor, SesionConversacion, Mensaje
-│   ├── webhook.py                  # Endpoint del webhook Meta/WhatsApp
+│   ├── webhook.py                  # Endpoint del webhook Telegram
 │   ├── procesador.py               # Lógica central de procesamiento de mensajes
 │   ├── conversacion.py             # Máquina de estados del onboarding
 │   ├── tasks.py                    # Tareas Celery para procesamiento async
 │   ├── urls.py                     # Rutas del módulo
 │   └── services/
-│       ├── whatsapp.py             # Cliente WhatsApp Cloud API
+│       ├── telegram.py             # Cliente Telegram Bot API
 │       ├── asistente_ia.py         # Integración Groq/Llama (LLM)
 │       ├── voz_a_texto.py          # Transcripción con Groq Whisper
 │       └── texto_a_voz.py          # Síntesis de voz gTTS / Google TTS
@@ -142,7 +150,6 @@ hackaton/
 │   ├── urls.py
 │   └── celery.py
 │
-├── telegram_bot/                   # Bot alternativo para Telegram (experimental)
 ├── Dockerfile
 ├── docker-compose.yml
 ├── entrypoint.sh
@@ -162,7 +169,7 @@ Crea un archivo `.env` en la raíz del proyecto basándote en `.env.example`:
 cp .env.example .env
 ```
 
-Variables obligatorias para el bot de WhatsApp:
+Variables obligatorias para el bot de Telegram:
 
 ```env
 # Django
@@ -172,11 +179,8 @@ DEBUG=True
 # Base de datos
 DATABASE_URL=postgres://postgres:postgres@db:5432/agritech
 
-# WhatsApp Cloud API (Meta)
-META_WHATSAPP_TOKEN=tu-token-de-acceso
-META_WHATSAPP_PHONE_NUMBER_ID=tu-phone-number-id
-META_VERIFY_TOKEN=un-token-que-elijas-vos
-META_APP_SECRET=tu-app-secret
+# Telegram Bot
+TELEGRAM_BOT_TOKEN=tu-token-del-bot
 
 # Groq (STT + LLM)
 GROQ_API_KEY=tu-clave-groq
@@ -217,15 +221,17 @@ Sin Redis/Celery, los mensajes se procesan en hilos separados (modo desarrollo).
 
 ---
 
-## Configurar el Webhook de WhatsApp
+## Configurar el Webhook de Telegram
 
-1. Desplegá el backend con HTTPS (Cloud Run en producción, o [ngrok](https://ngrok.com/) para desarrollo local).
-2. En [Meta for Developers](https://developers.facebook.com/apps) → tu App → WhatsApp → Configuración:
-   - **URL del webhook:** `https://<tu-dominio>/culty/whatsapp/webhook/`
-   - **Token de verificación:** el valor de `META_VERIFY_TOKEN`
-   - **Evento suscrito:** `messages`
-3. Completá `META_WHATSAPP_TOKEN` con el token de acceso permanente.
-4. Completá `META_WHATSAPP_PHONE_NUMBER_ID` con el ID del número de WhatsApp.
+1. Creá tu bot con [@BotFather](https://t.me/BotFather) en Telegram y obtené el `TELEGRAM_BOT_TOKEN`.
+2. Desplegá el backend con HTTPS (Cloud Run en producción, o [ngrok](https://ngrok.com/) para desarrollo local).
+3. Registrá el webhook:
+
+```bash
+curl -X POST "https://api.telegram.org/bot<TELEGRAM_BOT_TOKEN>/setWebhook" \
+     -H "Content-Type: application/json" \
+     -d '{"url": "https://<tu-dominio>/telegram/webhook/"}'
+```
 
 ---
 
