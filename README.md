@@ -8,9 +8,7 @@ El proyecto combina un **bot de Telegram conversacional** con un **backend de pr
 
 ## Video de Presentación
 
-[![Ver en YouTube](https://img.shields.io/badge/YouTube-Ver%20Demo-red?logo=youtube)](https://www.youtube.com/watch?v=LINK_DEL_VIDEO)
-
-> Reemplazá `LINK_DEL_VIDEO` con el ID o URL de tu video de YouTube.
+[![Ver en YouTube](https://img.shields.io/badge/YouTube-Ver%20Demo-red?logo=youtube)](https://youtube.com/shorts/H0Rsq6z3OHI?si=FHqPKroWvu6yoKyp)
 
 ---
 
