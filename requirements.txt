@@ -1,0 +1,43 @@
+# Core Web Framework
+Django>=5.0.6,<5.1.0
+
+# Asynchronous API Framework
+django-ninja>=1.1.0,<1.2.0
+pydantic>=2.0,<3.0
+
+# Database Engine
+psycopg2-binary>=2.9.9,<3.0.0
+
+# Production Servers (WSGI + ASGI)
+gunicorn>=22.0.0,<23.0.0
+uvicorn[standard]>=0.30.1,<0.31.0
+
+# Static File Management
+whitenoise>=6.7.0,<7.0.0
+
+# Configuration and CORS
+django-environ>=0.11.2,<0.12.0
+django-cors-headers>=4.3.1,<5.0.0
+
+# AI Integration — Google Cloud Vertex AI
+google-cloud-aiplatform>=1.53.0,<2.0.0
+
+# AI Integration — Google Gemini LLM (alertas en lenguaje natural)
+google-generativeai>=0.7.0,<1.0.0
+
+# HTTP Client para APIs climáticas externas (Open-Meteo, NASA POWER)
+httpx>=0.27.0,<0.28.0
+
+# Utilidades de fechas
+python-dateutil>=2.9.0,<3.0.0
+
+# Google Earth Engine Integration
+earthengine-api>=0.1.350,<0.2.0
+google-auth>=2.20.0,<3.0.0
+
+# Asistente Culty — WhatsApp
+celery>=5.4.0,<6.0.0
+redis>=5.0.0,<6.0.0
+groq>=0.9.0,<1.0.0
+gTTS>=2.5.0,<3.0.0
+google-cloud-texttospeech>=2.16.0,<3.0.0
